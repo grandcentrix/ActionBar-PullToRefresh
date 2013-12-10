@@ -19,14 +19,12 @@ package uk.co.senab.actionbarpulltorefresh.library.viewdelegates;
 import android.view.View;
 import android.webkit.WebView;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-
 /**
  * FIXME
  */
-public class WebViewDelegate extends PullToRefreshAttacher.ViewDelegate {
+public class WebViewDelegate implements ViewDelegate {
 
-    public static final Class SUPPORTED_VIEW_CLASS = WebView.class;
+    public static final Class[] SUPPORTED_VIEW_CLASSES =  { WebView.class };
 
     @Override
     public boolean isReadyForPull(View view, float x, float y) {

@@ -16,23 +16,23 @@
 
 package uk.co.senab.actionbarpulltorefresh.samples.stock;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 
 /**
  * This sample shows how to use ActionBar-PullToRefresh with a
  * {@link android.webkit.WebView WebView}, and manually creating (and attaching) a
- * {@link uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher} to the view.
+ * {@link PullToRefreshLayout} to the view.
  */
-public class WebViewActivity extends Activity implements PullToRefreshAttacher.OnRefreshListener {
+public class WebViewActivity extends BaseSampleActivity implements OnRefreshListener {
 
-    private PullToRefreshAttacher mPullToRefreshAttacher;
+    private PullToRefreshLayout mPullToRefreshLayout;
 
     private WebView mWebView;
 
@@ -41,25 +41,17 @@ public class WebViewActivity extends Activity implements PullToRefreshAttacher.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview);
 
-        /**
-         * Get ListView and give it an adapter to display the sample items
-         */
+        // Find WebView and get it ready to display pages
         mWebView = (WebView) findViewById(R.id.webview);
         mWebView.getSettings().setJavaScriptEnabled(true);
         mWebView.setWebViewClient(new SampleWebViewClient());
 
-        /**
-         * Here we create a PullToRefreshAttacher without an Options instance.
-         * PullToRefreshAttacher will manually create one using default values.
-         */
-        mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
-
-        // Retrieve the PullToRefreshLayout from the content view
-        PullToRefreshLayout ptrLayout = (PullToRefreshLayout) findViewById(R.id.ptr_webview);
-
-        // Give the PullToRefreshAttacher to the PullToRefreshLayout, along with the refresh
-        // listener (this).
-        ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher, this);
+        // Now find the PullToRefreshLayout and set it up
+        mPullToRefreshLayout = (PullToRefreshLayout) findViewById(R.id.ptr_layout);
+        ActionBarPullToRefresh.from(this)
+                .allChildrenArePullable()
+                .listener(this)
+                .setup(mPullToRefreshLayout);
 
         // Finally make the WebView load something...
         mWebView.loadUrl("http://www.google.com");
@@ -84,8 +76,8 @@ public class WebViewActivity extends Activity implements PullToRefreshAttacher.O
             super.onPageFinished(view, url);
 
             // If the PullToRefreshAttacher is refreshing, make it as complete
-            if (mPullToRefreshAttacher.isRefreshing()) {
-                mPullToRefreshAttacher.setRefreshComplete();
+            if (mPullToRefreshLayout.isRefreshing()) {
+                mPullToRefreshLayout.setRefreshComplete();
             }
         }
     }

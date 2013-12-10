@@ -17,6 +17,13 @@
 
 <resources>
 
+    <declare-styleable name="PullToRefreshView">
+
+        <!-- The class to use as a View's View Delegate. Can be relative path from app's package name -->
+        <attr name="ptrViewDelegateClass" format="reference|string" />
+
+    </declare-styleable>
+
     <!-- The attribute to set in your Application/Activity theme to reference your custom theme -->
     <attr name="ptrHeaderStyle" format="reference" />
 
@@ -33,6 +40,15 @@
 
         <!-- The color that the Progress Bar should be tinted with -->
         <attr name="ptrProgressBarColor" format="reference|color" />
+
+        <!-- The style of the Progress Bar -->
+        <attr name="ptrProgressBarStyle">
+            <flag name="inside" value="0x0" />
+            <flag name="outside" value="0x1" />
+        </attr>
+
+	    <!-- The height of the Progress Bar -->
+	    <attr name="ptrProgressBarHeight" format="reference|dimension" />
 
         <!-- Text to show to prompt the user is pull (or keep pulling) -->
         <attr name="ptrPullText" format="reference|string" />

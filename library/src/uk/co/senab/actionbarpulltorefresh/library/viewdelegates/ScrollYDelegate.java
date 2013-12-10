@@ -17,13 +17,14 @@
 package uk.co.senab.actionbarpulltorefresh.library.viewdelegates;
 
 import android.view.View;
-
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
+import android.widget.ScrollView;
 
 /**
  * FIXME
  */
-public class ScrollYDelegate extends PullToRefreshAttacher.ViewDelegate {
+public class ScrollYDelegate implements ViewDelegate {
+
+    public static final Class[] SUPPORTED_VIEW_CLASSES =  { ScrollView.class };
 
     @Override
     public boolean isReadyForPull(View view, float x, float y) {

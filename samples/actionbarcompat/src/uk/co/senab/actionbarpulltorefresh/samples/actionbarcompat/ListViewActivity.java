@@ -18,73 +18,76 @@ package uk.co.senab.actionbarpulltorefresh.samples.actionbarcompat;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
-import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshAttacher;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 
 /**
  * This sample shows how to use ActionBar-PullToRefresh with a
  * {@link android.widget.ListView ListView}, and manually creating (and attaching) a
- * {@link PullToRefreshAttacher} to the view.
+ * {@link PullToRefreshLayout} to the view.
  */
-public class ListViewActivity extends ActionBarActivity {
-
-    static String[] ITEMS = {"Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam",
-            "Abondance", "Ackawi", "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu",
-            "Airag", "Airedale", "Aisy Cendre", "Allgauer Emmentaler", "Abbaye de Belloc",
-            "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi", "Acorn", "Adelost",
-            "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
-            "Allgauer Emmentaler"};
-
-    private PullToRefreshAttacher mPullToRefreshAttacher;
+public class ListViewActivity extends BaseSampleActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_fragment);
-
-        /**
-         * Here we create a PullToRefreshAttacher manually without an Options instance.
-         * PullToRefreshAttacher will manually create one using default values.
-         */
-        mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
-
-        // Now add ListFragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.ptr_fragment, new SampleListFragment()).commit();
+    protected Fragment getSampleFragment() {
+        return new SampleListFragment();
     }
 
-    PullToRefreshAttacher getPullToRefreshAttacher() {
-        return mPullToRefreshAttacher;
-    }
+    /**
+     * Fragment Class
+     */
+    public static class SampleListFragment extends ListFragment implements
+            OnRefreshListener {
 
-    public static class SampleListFragment extends ListFragment
-            implements PullToRefreshAttacher.OnRefreshListener {
+        private static String[] ITEMS = {"Abbaye de Belloc", "Abbaye du Mont des Cats", "Abertam",
+                "Abondance", "Ackawi", "Acorn", "Adelost", "Affidelice au Chablis", "Afuega'l Pitu",
+                "Airag", "Airedale", "Aisy Cendre", "Allgauer Emmentaler", "Abbaye de Belloc",
+                "Abbaye du Mont des Cats", "Abertam", "Abondance", "Ackawi", "Acorn", "Adelost",
+                "Affidelice au Chablis", "Afuega'l Pitu", "Airag", "Airedale", "Aisy Cendre",
+                "Allgauer Emmentaler"};
 
-        private PullToRefreshAttacher mPullToRefreshAttacher;
+        private PullToRefreshLayout mPullToRefreshLayout;
 
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState) {
-            super.onViewCreated(view, savedInstanceState);
+            super.onViewCreated(view,savedInstanceState);
+            ViewGroup viewGroup = (ViewGroup) view;
 
-            /**
-             * Set the List Adapter to display the sample items
-             */
+            // As we're using a ListFragment we create a PullToRefreshLayout manually
+            mPullToRefreshLayout = new PullToRefreshLayout(viewGroup.getContext());
+
+            // We can now setup the PullToRefreshLayout
+            ActionBarPullToRefresh.from(getActivity())
+                    // We need to insert the PullToRefreshLayout into the Fragment's ViewGroup
+                    .insertLayoutInto(viewGroup)
+                    // Here we mark just the ListView and it's Empty View as pullable
+                    .theseChildrenArePullable(android.R.id.list, android.R.id.empty)
+                    .listener(this)
+                    .setup(mPullToRefreshLayout);
+        }
+
+        @Override
+        public void onActivityCreated(Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            // Set the List Adapter to display the sample items
             setListAdapter(new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1, ITEMS));
-
-            mPullToRefreshAttacher = ((ListViewActivity) getActivity()).getPullToRefreshAttacher();
-
-            // Set the Refreshable View to be the ListView and the refresh listener to be this.
-            mPullToRefreshAttacher.addRefreshableView(getListView(), this);
+            setListShownNoAnimation(true);
         }
 
         @Override
         public void onRefreshStarted(View view) {
+            // Hide the list
+            setListShown(false);
+
             /**
              * Simulate Refresh with 4 seconds sleep
              */
@@ -104,8 +107,13 @@ public class ListViewActivity extends ActionBarActivity {
                 protected void onPostExecute(Void result) {
                     super.onPostExecute(result);
 
-                    // Notify PullToRefreshAttacher that the refresh has finished
-                    mPullToRefreshAttacher.setRefreshComplete();
+                    // Notify PullToRefreshLayout that the refresh has finished
+                    mPullToRefreshLayout.setRefreshComplete();
+
+                    if (getView() != null) {
+                        // Show the list again
+                        setListShown(true);
+                    }
                 }
             }.execute();
         }
