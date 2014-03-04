@@ -1,19 +1,7 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
-    }
-}
-repositories {
-    mavenCentral()
-}
 apply plugin: 'android-library'
 
 dependencies {
-    compile project(':libraries:pull_to_refresh:library')
+    compile project(':library')
     compile "com.android.support:appcompat-v7:+"
 }
 
@@ -33,6 +21,10 @@ android {
             res.srcDirs = ['res']
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
-apply from: 'https://raw.github.com/chrisbanes/gradle-mvn-push/master/gradle-mvn-push.gradle'
+apply from: 'https://raw.github.com/mcxiaoke/gradle-mvn-push/master/gradle-mvn-push.gradle'
