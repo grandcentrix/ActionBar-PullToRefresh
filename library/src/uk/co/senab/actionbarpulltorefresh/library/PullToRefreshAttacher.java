@@ -458,8 +458,14 @@ public class PullToRefreshAttacher {
         }
     }
 
-    void hideHeaderView() {
+   void hideHeaderView() {
         if (mHeaderTransformer.hideHeaderView()) {
+
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
+                if (mHeaderView != null) {
+                    mHeaderView.setVisibility(View.GONE);
+                }
+            }
             if (mHeaderViewListener != null) {
                 mHeaderViewListener.onStateChanged(mHeaderView,
                         HeaderViewListener.STATE_HIDDEN);
